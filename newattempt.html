@@ -103,7 +103,7 @@
       window.onMouseDown = () => {};
       window.onMouseMoveHandler = () => {};
       document.addEventListener("mousedown", (event) => window.onMouseDown(event));
-      window.oncontextmenu = (event) => window.onRightClick(event);
+      window.oncontextmenu = (event) => window.onRightClickHandler(event);
       window.addEventListener("click", (event) => window.onClickHandler(event), false);
       document.addEventListener("mousemove", (event) => window.onMouseMoveHandler(event));
 
@@ -533,10 +533,9 @@
           renderer.render(scene, camera);
         }
 
-        // window.addEventListener("click", onClick, false);
         window.onClickHandler = onClick;
 
-        function onRightClick(event) {
+        window.onRightClickHandler = (event) => {
           mouseDown = false;
           mouse.x = (event.clientX / renderer.domElement.offsetWidth) * 2 - 1;
           mouse.y = -(event.clientY / renderer.domElement.offsetHeight) * 2 + 1;
@@ -577,10 +576,9 @@
           }
           return false;
         }
-        window.onRightClickHandler = onRightClick;
+        // window.onRightClickHandler = onRightClick;
 
         window.onMouseDown = (event) => {
-          console.log('HIHI');
           mouseMoves = 0;
           mouseDown = true;
         };
