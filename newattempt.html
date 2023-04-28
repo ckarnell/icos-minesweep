@@ -17,7 +17,9 @@
   </head>
   <body>
     <script>
-      // const startGame = function() {
+      let icosahedron = null;
+      const startGame = function() {
+        if (icosahedron) scene.remove(icosahedron); // This works to unrender the thing
         const BufferGeometry = THREE.BufferGeometry;
         const BufferAttribute = THREE.BufferAttribute;
         const Mesh = THREE.Mesh;
@@ -370,7 +372,7 @@
         let revealedFaces = [];
         let flaggedFaces = [];
 
-        const icosahedron = makeIcosahedron(new THREE.IcosahedronGeometry(3, detail), new THREE.MeshPhongMaterial({
+        icosahedron = makeIcosahedron(new THREE.IcosahedronGeometry(3, detail), new THREE.MeshPhongMaterial({
           color: 0xadd8e6,
           shininess: 10, // Was 100
           vertexColors: true
@@ -512,7 +514,8 @@
             if (isBomb) {
               color = new THREE.Color(0x000000); // Game over
               gameOver = true;
-              console.log('Game over')
+              console.log('Game over');
+              // document.querySelector('.btn').style.display = 'block';
             } else {
               const surroundingBombs = getSurroundingBombsTotal(vA, vB, vC);
               console.log(surroundingBombs);
@@ -669,9 +672,8 @@
           };
         });
         render();
-      // }
-      // startGame();
-      // scene.remove(icosahedron); // This works to unrender the thing
+      }
+      startGame();
     </script>
   </body>
 </html>
