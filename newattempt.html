@@ -65,13 +65,13 @@
               geometryDigit[ i ] = new BufferGeometry();
               digitPositions[ i ] =  new Float32Array( coordDigit[ i ].length / 2 * 3 );
               geometryDigit[ i ].setAttribute( 'position', new BufferAttribute( digitPositions[ i ], 3 ) );
-              
+
               for ( let j = 0; j < coordDigit[ i ].length/ 2; j ++ ) {
                   digitPositions[ i ][ j * 3 ] =  0.1 * size * coordDigit[ i ][ 2 * j ];
                   digitPositions[ i ][ j * 3 + 1 ] = 0.1 * size * coordDigit[ i ][ 2 * j + 1 ];
                   digitPositions[ i ][ j * 3 + 2 ] = 0;
               }
-              
+
               digit[ i ] = new Line( geometryDigit[ i ], materialDigits );
           }
 
@@ -438,6 +438,13 @@
           return uniqueAdjacentIndices.map(ind => bombPlacements[ind]).filter(val => !!val).length;
         }
 
+        // onDragStart = function () {
+        //     if (gameOver) {
+        //       controls.enabled = false;
+        //     }
+        // } );
+        // window.addEventListener("ondragstart", onDragStart, false);
+
         const bombColorMap = {
           0: new THREE.Color(0x5A5A5A),
           1: new THREE.Color(0xADD8E6),
@@ -455,13 +462,12 @@
         }
 
         function onClick(event) {
-          if (gameOver) return;
           // event.preventDefault();
           mouseDown = false;
           if (isDragging && mouseMoves > 5) {
             isDragging = false;
             mouseMoves = 0;
-            return false;
+            return;
           };
           mouseMoves = 0;
 
@@ -469,6 +475,9 @@
           mouse.y = -(event.clientY / renderer.domElement.offsetHeight) * 2 + 1;
 
           caster.setFromCamera(mouse, camera);
+          if (gameOver) {
+            return;
+          }
 
           const intersects = caster.intersectObjects(scene.children).filter(intersect => intersect.face !== null);
           // window.intersects = intersects;
@@ -572,18 +581,26 @@
         }
 
         window.addEventListener("click", onClick, false);
+        window.addEventListener("ondragstart", () => { console.log('DRAG START')}, false);
 
         function onRightClick(event) {
+          mouseDown = false;
           mouse.x = (event.clientX / renderer.domElement.offsetWidth) * 2 - 1;
           mouse.y = -(event.clientY / renderer.domElement.offsetHeight) * 2 + 1;
 
           caster.setFromCamera(mouse, camera);
+          if (gameOver) {
+            return false;
+          }
 
           const intersects = caster.intersectObjects(scene.children).filter(intersect => intersect.face !== null);
 
           if (intersects.length > 0) {
 
             const intersection = intersects[1];
+            if (revealedFaces.indexOf(intersection.faceIndex) !== -1) {
+              return false;
+            }
 
             const colorAttribute = intersection.object.geometry.getAttribute('color');
             const face = intersection.face;
@@ -629,19 +646,21 @@
               y: y - previousMousePosition.y,
             };
 
-            const deltaRotationQuaternion = new THREE.Quaternion().setFromEuler(
-              new THREE.Euler(
-                (deltaMove.y * Math.PI) / 360,
-                (deltaMove.x * Math.PI) / 360,
-                0,
-                "XYZ"
-              )
-            );
+            if (mouseDown) {
+              const deltaRotationQuaternion = new THREE.Quaternion().setFromEuler(
+                new THREE.Euler(
+                  (deltaMove.y * Math.PI) / 360,
+                  (deltaMove.x * Math.PI) / 360,
+                  0,
+                  "XYZ"
+                )
+              );
 
-            icosahedron.quaternion.multiplyQuaternions(
-              deltaRotationQuaternion,
-              icosahedron.quaternion
-            );
+              icosahedron.quaternion.multiplyQuaternions(
+                deltaRotationQuaternion,
+                icosahedron.quaternion
+              );
+            }
           }
 
           previousMousePosition = {
