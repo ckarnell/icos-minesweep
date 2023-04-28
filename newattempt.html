@@ -39,7 +39,7 @@
 
         const positionCount = mesh.geometry.attributes.position.count;
         const faceCount = mesh.geometry.index.array.length / 3;
-         
+
         const vertexNumbers = [];
         const faceNumbers = [];
         const materialDigits = new LineBasicMaterial( { color: color } );
@@ -100,15 +100,23 @@
         //     }
         // }
 
-        i100 =  0; // reset
-        i10  =  0;
-        i1   = -1;
-
+        window.debugBombs = {};
+        window.debugCoords = {};
         if ( mode === 2 || mode === 3 ) {
             for ( let i = 0; i < faceCount ; i ++ ) {
                 // number on board, up to three digits are pinned there
                 const board = new Mesh( new BufferGeometry( ) );
-                numbering( board  ); // numbering the faces, hundreds ...
+                // console.log(posArray[i*3]);
+                // console.log(posArray[(i*3) + 1]);
+                // const surroundingBombsKey = getKey(posArray[i*3], posArray[(i*3) + 1], posArray[(i*3) + 2]);
+                var vA = new THREE.Vector3(posArray[i*9], posArray[(i*9) + 1], posArray[(i*9) + 2]);
+                var vB = new THREE.Vector3(posArray[(i*9) + 3], posArray[(i*9) + 4], posArray[(i*9) + 5]);
+                var vC = new THREE.Vector3(posArray[(i*9) + 6], posArray[(i*9) + 7], posArray[(i*9) + 8]);
+              
+                const surroundingBombs = getSurroundingBombsTotal(vA, vB, vC);
+                window.debugBombs[i] = surroundingBombs;
+                window.debugCoords[i] = [vA, vB, vC];
+                numbering(board, surroundingBombs); // numbering the faces, hundreds ...
                 faceNumbers.push( board );  // place the table in the face numbering data field
                 mesh.add( faceNumbers[ i ] );    
             }
@@ -139,49 +147,41 @@
             }
         }
 
-        function numbering( board ) {
-            
-            i1 ++;                                                      // starts with  -1 + 1 = 0
+        function numbering(board, i1) {
+            // i1 ++;                                                      // starts with  -1 + 1 = 0
             
             if ( i1   === 10 ) { i1   = 0; i10 ++ }
             if ( i10  === 10 ) { i10  = 0; i100 ++ }
             if ( i100 === 10 ) { i100 = 0 }                             // hundreds (reset when overflow)
             
             if ( i100 > 0 ) {
-
                 d100 = digit[ i100 ].clone();                           // digit for hundreds
                 board.add( d100 );                                      //  on the board ...
                 d100.position.x = -8 * 0.1 * size;                      // ... move slightly to the left
-
             }
             
             if ( ( i100 > 0 ) || ( ( i100 === 0 ) && ( i10 > 0 ) ) ) {  // no preceding zeros tens
-
                 d10 = digit[ i10 ].clone();                             // digit for tenth
                 board.add( d10 );                                       //  on the board
-
             }
-            
+
             d1 =   digit[ i1 ].clone();                                 // digit 
             board.add( d1 );                                            //  on the board ...
             d1.position.x = 8 * 0.1 * size;                             // ... move slightly to the right
-            
         }
 
         this.update = function ( ) {
             if ( this.mode === 1 || this.mode === 3 ) {
                 for( let n = 0; n < vertexNumbers.length; n ++ ) {
-                    vertexNumbers[ n ].lookAt( camera.position );
+                    vertexNumbers[n].lookAt(camera.position);
                 }
             }
-            
             if ( this.mode === 2 || this.mode === 3 ) {
                 for( let n = 0; n < faceNumbers.length; n ++ ) {
                     faceNumbers[n].lookAt( camera.position );
                 }
             }
         }
-         
         this.update( ); // update helper
       };
 
@@ -238,10 +238,10 @@
       const totalFaces = newGeometry.attributes.position.count / 3;
       const bombs = Math.floor(totalFaces / 4.4);
       const wireframe = new THREE.Mesh(newGeometry, wireframeMaterial);
-      // indexGeometry(icosahedron.geometry);
-      // vertexFaceNumbersHelper(camera, icosahedron, 2, 0.1, 0xff00ff);
-      indexGeometry(wireframe.geometry);
-      vertexFaceNumbersHelper(camera, wireframe, 2, 0.1, 0xff00ff);
+      indexGeometry(icosahedron.geometry);
+      vertexFaceNumbersHelper(camera, icosahedron, 2, 0.1, 0xff00ff);
+      // indexGeometry(wireframe.geometry);
+      // vertexFaceNumbersHelper(camera, wireframe, 2, 0.1, 0xff00ff);
       icosahedron.add(wireframe);
 
       const light = new THREE.DirectionalLight(0xffffff, 0.8);
@@ -312,7 +312,7 @@
 
         if (intersects.length > 0) {
 
-          console.log(intersects);
+          // console.log(intersects);
           const intersection = intersects[1];
 
           const colorAttribute = intersection.object.geometry.getAttribute('color');
@@ -330,6 +330,9 @@
           const vAkey = vA.x.toString() + '|' + vA.y.toString() + '|' + vA.z.toString();
           const vBkey = vB.x.toString() + '|' + vB.y.toString() + '|' + vB.z.toString();
           const vCkey = vC.x.toString() + '|' + vC.y.toString() + '|' + vC.z.toString();
+          console.log(vAkey);
+          console.log(vBkey);
+          console.log(vCkey);
 
           const isBomb = bombPlacements[intersection.faceIndex];
           let color = new THREE.Color(0xFFFFFF);
