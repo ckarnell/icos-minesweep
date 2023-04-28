@@ -24,6 +24,7 @@
         const LineBasicMaterial = THREE.LineBasicMaterial;
         const Line = THREE.Line;
 
+        let gameOver = false;
         const indexGeometry = function(geometry) {
           const indexArray = [];
           const positionArray = geometry.attributes.position.array;
@@ -114,21 +115,6 @@
           if ( mode === 2 || mode === 3 ) {
              for ( let i = 0; i < faceCount ; i ++ ) {
                  addBombAtFaceIndex(i);
-                 // // number on board, up to three digits are pinned there
-                 // const board = new Mesh( new BufferGeometry( ) );
-                 // // console.log(posArray[i*3]);
-                 // // console.log(posArray[(i*3) + 1]);
-                 // // const surroundingBombsKey = getKey(posArray[i*3], posArray[(i*3) + 1], posArray[(i*3) + 2]);
-                 // var vA = new THREE.Vector3(posArray[i*9], posArray[(i*9) + 1], posArray[(i*9) + 2]);
-                 // var vB = new THREE.Vector3(posArray[(i*9) + 3], posArray[(i*9) + 4], posArray[(i*9) + 5]);
-                 // var vC = new THREE.Vector3(posArray[(i*9) + 6], posArray[(i*9) + 7], posArray[(i*9) + 8]);
-               
-                 // const surroundingBombs = getSurroundingBombsTotal(vA, vB, vC);
-                 // window.debugBombs[i] = surroundingBombs;
-                 // window.debugCoords[i] = [vA, vB, vC];
-                 // numbering(board, surroundingBombs); // numbering the faces, hundreds ...
-                 // faceNumbers.push( board );  // place the table in the face numbering data field
-                 // mesh.add( faceNumbers[ i ] );    
              }
 
              for( let n = 0; n < faceNumbers.length; n ++ ) {
@@ -382,6 +368,7 @@
         const mouse = new THREE.Vector2();
         const detail = 2;
         let revealedFaces = [];
+        let flaggedFaces = [];
 
         const icosahedron = makeIcosahedron(new THREE.IcosahedronGeometry(3, detail), new THREE.MeshPhongMaterial({
           color: 0xadd8e6,
@@ -468,6 +455,8 @@
         }
 
         function onClick(event) {
+          if (gameOver) return;
+          // event.preventDefault();
           mouseDown = false;
           if (isDragging && mouseMoves > 5) {
             isDragging = false;
@@ -475,7 +464,6 @@
             return false;
           };
           mouseMoves = 0;
-          event.preventDefault();
 
           mouse.x = (event.clientX / renderer.domElement.offsetWidth) * 2 - 1;
           mouse.y = -(event.clientY / renderer.domElement.offsetHeight) * 2 + 1;
@@ -489,6 +477,7 @@
 
             // console.log(intersects);
             const intersection = intersects[1];
+            if (flaggedFaces.indexOf(intersection.faceIndex) !== -1) return;
 
             const colorAttribute = intersection.object.geometry.getAttribute('color');
             const face = intersection.face;
@@ -513,6 +502,7 @@
             let color = new THREE.Color(0xFFFFFF);
             if (isBomb) {
               color = new THREE.Color(0x000000); // Game over
+              gameOver = true;
               console.log('Game over')
             } else {
               const surroundingBombs = getSurroundingBombsTotal(vA, vB, vC);
@@ -613,6 +603,7 @@
             colorAttribute.setXYZ(face.c, color.r, color.g, color.b);
 
             colorAttribute.needsUpdate = true;
+            flaggedFaces.push(intersection.faceIndex);
           }
           return false;
         }
