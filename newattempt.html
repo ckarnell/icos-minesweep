@@ -139,7 +139,9 @@
           const faceCount = mesh.geometry.index.array.length / 3;
 
           const vertexNumbers = [];
-          const faceNumbers = [];
+          if (!window.faceNumbers || !firstClickHappened) {
+            window.faceNumbers = [];
+          }
           const materialDigits = new LineBasicMaterial( { color: color } );
           const geometryDigit = [];
           const digit = [];
@@ -186,7 +188,12 @@
 
           function addBombAtFaceIndex(i) {
             // number on board, up to three digits are pinned there
-            const board = new Mesh( new BufferGeometry( ) );
+            let board = null;
+            if (!firstClickHappened) {
+              board = new Mesh( new BufferGeometry( ) );
+            } else {
+              board = window.faceNumbers[i];
+            }
             // const surroundingBombsKey = getKey(posArray[i*3], posArray[(i*3) + 1], posArray[(i*3) + 2]);
             var vA = new THREE.Vector3(posArray[i*9], posArray[(i*9) + 1], posArray[(i*9) + 2]);
             var vB = new THREE.Vector3(posArray[(i*9) + 3], posArray[(i*9) + 4], posArray[(i*9) + 5]);
@@ -201,8 +208,10 @@
               numbering(board, surroundingBombs); // numbering the faces, hundreds ...
             }
             // numbering(board, surroundingBombs); // numbering the faces, hundreds ...
-            faceNumbers.push( board );  // place the table in the face numbering data field
-            mesh.add( faceNumbers[ i ] );    
+            // window.faceNumbers.push( board );  // place the table in the face numbering data field
+            window.faceNumbers[i] = board;  // place the table in the face numbering data field
+            mesh.add( window.faceNumbers[ i ] );    
+            // mesh.children[i + 1] =  window.faceNumbers[ i ];    
           }
 
           if ( mode === 2 || mode === 3 ) {
@@ -210,7 +219,7 @@
                  addBombAtFaceIndex(i);
              }
 
-             for( let n = 0; n < faceNumbers.length; n ++ ) {
+             for( let n = 0; n < window.faceNumbers.length; n ++ ) {
 
                   const n3 = 3 * n;
 
@@ -233,7 +242,7 @@
                   z /= 3;
 
                   const multipler = 1.03;
-                  faceNumbers[n].position.set( x*multipler, y*multipler, z*multipler );
+                  window.faceNumbers[n].position.set( x*multipler, y*multipler, z*multipler );
               }
           }
 
@@ -268,8 +277,8 @@
                   }
               }
               if ( this.mode === 2 || this.mode === 3 ) {
-                  for( let n = 0; n < faceNumbers.length; n ++ ) {
-                      faceNumbers[n].lookAt( camera.position );
+                  for( let n = 0; n < window.faceNumbers.length; n ++ ) {
+                      window.faceNumbers[n].lookAt( camera.position );
                   }
               }
           }
