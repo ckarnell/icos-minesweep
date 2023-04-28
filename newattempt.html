@@ -97,6 +97,16 @@
         });
       });
 
+      window.onClickHandler = () => {};
+      window.onRightClickHandler = () => {};
+      window.onRightClickHandler = () => {};
+      window.onMouseDown = () => {};
+      window.onMouseMoveHandler = () => {};
+      document.addEventListener("mousedown", (event) => window.onMouseDown(event));
+      window.oncontextmenu = (event) => window.onRightClick(event);
+      window.addEventListener("click", (event) => window.onClickHandler(event), false);
+      document.addEventListener("mousemove", (event) => window.onMouseMoveHandler(event));
+
       window.icosahedrons = [];
       let scene = new THREE.Scene();
       const startGame = function(detail=1) {
@@ -139,7 +149,8 @@
           const faceCount = mesh.geometry.index.array.length / 3;
 
           const vertexNumbers = [];
-          if (!window.faceNumbers || !firstClickHappened) {
+          // if (!window.faceNumbers || !firstClickHappened) {
+          if (!window.faceNumbers) {
             window.faceNumbers = [];
           }
           const materialDigits = new LineBasicMaterial( { color: color } );
@@ -522,7 +533,8 @@
           renderer.render(scene, camera);
         }
 
-        window.addEventListener("click", onClick, false);
+        // window.addEventListener("click", onClick, false);
+        window.onClickHandler = onClick;
 
         function onRightClick(event) {
           mouseDown = false;
@@ -565,18 +577,20 @@
           }
           return false;
         }
-        window.oncontextmenu = onRightClick;
+        window.onRightClickHandler = onRightClick;
 
-        document.addEventListener("mousedown", (event) => {
+        window.onMouseDown = (event) => {
+          console.log('HIHI');
           mouseMoves = 0;
           mouseDown = true;
-        });
+        };
 
         let previousMousePosition = {
           x: 0,
           y: 0,
         };
-        document.addEventListener("mousemove", (event) => {
+        // document.addEventListener("mousemove", (event) => {
+        window.onMouseMoveHandler = (event) => {
           if (mouseDown) {
             mouseMoves++;
             this.update && this.update();
@@ -608,7 +622,7 @@
             x: event.x,
             y: event.y,
           };
-        });
+        };
         render();
       }
       startGame();
