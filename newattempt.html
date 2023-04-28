@@ -589,7 +589,7 @@
 
           caster.setFromCamera(mouse, camera);
 
-          const intersects = caster.intersectObjects(scene.children);
+          const intersects = caster.intersectObjects(scene.children).filter(intersect => intersect.face !== null);
 
           if (intersects.length > 0) {
 
