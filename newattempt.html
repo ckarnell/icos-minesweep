@@ -8,18 +8,107 @@
       body {
         margin: 0;
         overflow: hidden;
+        font-family: 'Roboto Mono', monospace;
       }
       canvas {
         width: 100%;
         height: 100%;
       }
+
+  /* Style the radio button group container */
+  .radio-group {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 9999;
+    display: inline-flex;
+    flex-direction: column;
+    background-color: #888;
+    border: 1px solid #333;
+    padding: 5px;
+  }
+
+  /* Style the individual radio buttons */
+  .radio-group label {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 5px;
+    color: #fff;
+    cursor: pointer;
+    user-select: none;
+    font-size: 1.1rem;
+  }
+
+  /* Style the radio button input */
+  .radio-group input {
+    cursor: pointer;
+  }
+
+  /* Style the radio button indicator */
+  .radio-group .checkmark {
+    position: absolute;
+    left: 0;
+    top: 2px;
+    height: 22px;
+    width: 22px;
+    background-color: #fff;
+    border-radius: 50%;
+    border: 1px solid #333;
+  }
+
+  /* Style the checked radio button indicator */
+  .radio-group input:checked + .checkmark::after {
+    content: '';
+    position: absolute;
+    display: block;
+    top: 5px;
+    left: 5px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #333;
+  }
     </style>
   </head>
   <body>
+    <div class="radio-group">
+      <label>
+        <input type="radio" name="difficulty" value="1" checked>
+        <span>Beginner</span>
+      </label>
+      <label>
+        <input type="radio" name="difficulty" value="2">
+        <span>Intermediate</span>
+      </label>
+      <label>
+        <input type="radio" name="difficulty" value="3">
+        <span>Expert</span>
+      </label>
+    </div>
     <script>
+      // Get the radio buttons
+      const radioButtons = document.querySelectorAll('.radio-group input');
+
+      // Add event listeners to the radio buttons
+      radioButtons.forEach(function(radioButton) {
+        radioButton.addEventListener('click', function() {
+          const difficulty = Number(this.value);
+          startGame(difficulty);
+        });
+      });
+
       let icosahedron = null;
-      const startGame = function() {
-        if (icosahedron) scene.remove(icosahedron); // This works to unrender the thing
+      let scene = new THREE.Scene();
+      const startGame = function(detail=1) {
+        console.log(detail);
+        if (icosahedron) {
+          scene.remove.apply(scene, scene.children);
+          // while(scene.children.length > 0){ 
+          //     scene.remove(scene.children[0]); 
+          // }
+          // return;
+        }
+        scene = new THREE.Scene();
         const BufferGeometry = THREE.BufferGeometry;
         const BufferAttribute = THREE.BufferAttribute;
         const Mesh = THREE.Mesh;
@@ -199,11 +288,8 @@
         let bombPlacements = [];
         camera.position.z = 5;
 
-        const scene = new THREE.Scene();
-
         const caster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
-        const detail = 2;
         let revealedFaces = [];
         let flaggedFaces = [];
 
@@ -238,9 +324,6 @@
         const bombs = Math.floor(totalFaces / 4.4);
         const wireframe = new THREE.Mesh(newGeometry, wireframeMaterial);
         indexGeometry(icosahedron.geometry);
-        // vertexFaceNumbersHelper(camera, icosahedron, 2, 0.1, 0x000000);
-        // indexGeometry(wireframe.geometry);
-        // vertexFaceNumbersHelper(camera, wireframe, 2, 0.1, 0xff00ff);
         icosahedron.add(wireframe);
 
         const light = new THREE.DirectionalLight(0xffffff, 0.8);
@@ -265,22 +348,12 @@
 
         function getSurroundingBombsTotal(vA, vB, vC) {
           let adjacentIndices = [];
-          // const key1 = vA.x.toString() + '|' + vA.y.toString() + '|' + vA.z.toString()
-          // const val1 = adjacentFaceIndicesMap[vA.x.toString() + '|' + vA.y.toString() + '|' + vA.z.toString()];
-          // console.log(val1);
           adjacentIndices = adjacentIndices.concat(adjacentFaceIndicesMap[getKey(vA.x, vA.y, vA.z)]);
           adjacentIndices = adjacentIndices.concat(adjacentFaceIndicesMap[getKey(vB.x, vB.y, vB.z)]);
           adjacentIndices = adjacentIndices.concat(adjacentFaceIndicesMap[getKey(vC.x, vC.y, vC.z)]);
           const uniqueAdjacentIndices = Array.from(new Set(adjacentIndices));
           return uniqueAdjacentIndices.map(ind => bombPlacements[ind]).filter(val => !!val).length;
         }
-
-        // onDragStart = function () {
-        //     if (gameOver) {
-        //       controls.enabled = false;
-        //     }
-        // } );
-        // window.addEventListener("ondragstart", onDragStart, false);
 
         const bombColorMap = {
           0: new THREE.Color(0x5A5A5A),
@@ -321,14 +394,11 @@
 
           if (intersects.length > 0) {
 
-            // console.log(intersects);
             const intersection = intersects[1];
             if (flaggedFaces.indexOf(intersection.faceIndex) !== -1) return;
 
             const colorAttribute = intersection.object.geometry.getAttribute('color');
             const face = intersection.face;
-            // console.log(intersection);
-            // console.log(face);
             var vA = new THREE.Vector3();
             var vB = new THREE.Vector3();
             var vC = new THREE.Vector3();
