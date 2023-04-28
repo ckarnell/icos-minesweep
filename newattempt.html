@@ -25,6 +25,7 @@
         const Mesh = THREE.Mesh;
         const LineBasicMaterial = THREE.LineBasicMaterial;
         const Line = THREE.Line;
+        let firstClickHappened = false;
 
         let gameOver = false;
         const indexGeometry = function(geometry) {
@@ -76,8 +77,6 @@
 
               digit[ i ] = new Line( geometryDigit[ i ], materialDigits );
           }
-
-          // ......................................................
 
           const posArray = mesh.geometry.attributes.position.array;
           const indArray = mesh.geometry.index.array;
@@ -185,170 +184,6 @@
           this.update( ); // update helper
         };
 
-        // const vertexFaceNumbersHelper = function ( camera, mesh, mode, size, color ) {
-        //   // mode: 0 nothing, 1 vertex, 2 face, 3 vertex & face
-        //   this.mode = mode;
-
-        //   const positionCount = mesh.geometry.attributes.position.count;
-        //   const faceCount = mesh.geometry.index.array.length / 3;
-
-        //   const vertexNumbers = [];
-        //   const faceNumbers = [];
-        //   const materialDigits = new LineBasicMaterial( { color: color } );
-        //   const geometryDigit = [];
-        //   const digit = [];
-        //   const digitPositions = [];
-        //   let d100, d10, d1;      // digits
-
-        //   const coordDigit = [];  // design of the digits
-        //   coordDigit[ 0 ] = [ 0,0, 0,9, 6,9, 6,0, 0,0 ];
-        //   coordDigit[ 1 ] = [ 0,6, 3,9, 3,0 ];
-        //   coordDigit[ 2 ] = [ 0,9, 6,9, 6,6, 0,0, 6,0 ];
-        //   coordDigit[ 3 ] = [ 0,9, 6,9, 6,5, 3,5, 6,5, 6,0, 0,0 ];
-        //   coordDigit[ 4 ] = [ 0,9, 0,5, 6,5, 3,5, 3,6, 3,0 ];
-        //   coordDigit[ 5 ] = [ 6,9, 0,9, 0,5, 6,5, 6,0, 0,0 ];
-        //   coordDigit[ 6 ] = [ 6,9, 0,9, 0,0, 6,0, 6,5, 0,5 ];
-        //   coordDigit[ 7 ] = [ 0,9, 6,9, 6,6, 0,0 ];
-        //   coordDigit[ 8 ] = [ 0,0, 0,9, 6,9, 6,5, 0,5, 6,5, 6,0, 0,0 ];
-        //   coordDigit[ 9 ] = [ 6,5, 0,5, 0,9, 6,9, 6,0, 0,0 ];
-
-        //   for ( let i = 0; i < 10; i ++ ) {
-        //       geometryDigit[ i ] = new BufferGeometry();
-        //       digitPositions[ i ] =  new Float32Array( coordDigit[ i ].length / 2 * 3 );
-        //       geometryDigit[ i ].setAttribute( 'position', new BufferAttribute( digitPositions[ i ], 3 ) );
-        //       
-        //       for ( let j = 0; j < coordDigit[ i ].length/ 2; j ++ ) {
-        //           digitPositions[ i ][ j * 3 ] =  0.1 * size * coordDigit[ i ][ 2 * j ];
-        //           digitPositions[ i ][ j * 3 + 1 ] = 0.1 * size * coordDigit[ i ][ 2 * j + 1 ];
-        //           digitPositions[ i ][ j * 3 + 2 ] = 0;
-        //       }
-        //       
-        //       digit[ i ] = new Line( geometryDigit[ i ], materialDigits );
-        //   }
-
-        //   // ......................................................
-
-        //   const posArray = mesh.geometry.attributes.position.array;
-        //   const indArray = mesh.geometry.index.array;
-
-        //   let x, y, z;
-
-        //   let i100 =  0;
-        //   let i10  =  0;
-        //   let i1   = -1;
-
-        //   window.debugBombs = {};
-        //   window.debugCoords = {};
-        //   function addBombAtFaceIndex(i) {
-        //     // number on board, up to three digits are pinned there
-        //     const board = new Mesh( new BufferGeometry( ) );
-        //     // console.log(posArray[i*3]);
-        //     // console.log(posArray[(i*3) + 1]);
-        //     // const surroundingBombsKey = getKey(posArray[i*3], posArray[(i*3) + 1], posArray[(i*3) + 2]);
-        //     var vA = new THREE.Vector3(posArray[i*9], posArray[(i*9) + 1], posArray[(i*9) + 2]);
-        //     var vB = new THREE.Vector3(posArray[(i*9) + 3], posArray[(i*9) + 4], posArray[(i*9) + 5]);
-        //     var vC = new THREE.Vector3(posArray[(i*9) + 6], posArray[(i*9) + 7], posArray[(i*9) + 8]);
-        //   
-        //     const surroundingBombs = getSurroundingBombsTotal(vA, vB, vC);
-        //     window.debugBombs[i] = surroundingBombs;
-        //     window.debugCoords[i] = [vA, vB, vC];
-        //     const isBomb = bombPlacements[i];
-        //     if (!isBomb) {
-        //       // return;
-        //       numbering(board, surroundingBombs); // numbering the faces, hundreds ...
-        //     }
-        //     // numbering(board, surroundingBombs); // numbering the faces, hundreds ...
-        //     faceNumbers.push( board );  // place the table in the face numbering data field
-        //     mesh.add( faceNumbers[ i ] );    
-        //   }
-
-        //   if ( mode === 2 || mode === 3 ) {
-        //       for ( let i = 0; i < faceCount ; i ++ ) {
-        //           addBombAtFaceIndex(i);
-        //           // // number on board, up to three digits are pinned there
-        //           // const board = new Mesh( new BufferGeometry( ) );
-        //           // // console.log(posArray[i*3]);
-        //           // // console.log(posArray[(i*3) + 1]);
-        //           // // const surroundingBombsKey = getKey(posArray[i*3], posArray[(i*3) + 1], posArray[(i*3) + 2]);
-        //           // var vA = new THREE.Vector3(posArray[i*9], posArray[(i*9) + 1], posArray[(i*9) + 2]);
-        //           // var vB = new THREE.Vector3(posArray[(i*9) + 3], posArray[(i*9) + 4], posArray[(i*9) + 5]);
-        //           // var vC = new THREE.Vector3(posArray[(i*9) + 6], posArray[(i*9) + 7], posArray[(i*9) + 8]);
-        //         
-        //           // const surroundingBombs = getSurroundingBombsTotal(vA, vB, vC);
-        //           // window.debugBombs[i] = surroundingBombs;
-        //           // window.debugCoords[i] = [vA, vB, vC];
-        //           // numbering(board, surroundingBombs); // numbering the faces, hundreds ...
-        //           // faceNumbers.push( board );  // place the table in the face numbering data field
-        //           // mesh.add( faceNumbers[ i ] );    
-        //       }
-
-        //      for( let n = 0; n < faceNumbers.length; n ++ ) {
-
-        //           const n3 = 3 * n;
-
-        //           x = 0;
-        //           x += posArray[ indArray[ n3 ] * 3 ];
-        //           x += posArray[ indArray[ n3 + 1 ] * 3 ];
-        //           x += posArray[ indArray[ n3 + 2 ] * 3 ];
-        //           x /= 3;
-
-        //           y = 0;
-        //           y += posArray[ indArray[ n3 ] * 3  + 1 ];
-        //           y += posArray[ indArray[ n3 + 1 ] * 3 + 1 ];
-        //           y += posArray[ indArray[ n3 + 2 ] * 3 + 1 ];
-        //           y /= 3;
-
-        //           z = 0;
-        //           z += posArray[ indArray[ n3 ] * 3  + 2 ];
-        //           z += posArray[ indArray[ n3 + 1 ] * 3 + 2 ];
-        //           z += posArray[ indArray[ n3 + 2 ] * 3 + 2 ];
-        //           z /= 3;
-
-        //           const multipler = 1.03;
-        //           faceNumbers[n].position.set( x*multipler, y*multipler, z*multipler );
-        //       }
-        //   }
-
-        //   function numbering(board, i1) {
-        //       // i1 ++;                                                      // starts with  -1 + 1 = 0
-        //       
-        //       if ( i1   === 10 ) { i1   = 0; i10 ++ }
-        //       if ( i10  === 10 ) { i10  = 0; i100 ++ }
-        //       if ( i100 === 10 ) { i100 = 0 }                             // hundreds (reset when overflow)
-        //       
-        //       if ( i100 > 0 ) {
-        //           d100 = digit[ i100 ].clone();                           // digit for hundreds
-        //           board.add( d100 );                                      //  on the board ...
-        //           d100.position.x = -8 * 0.1 * size;                      // ... move slightly to the left
-        //       }
-        //       
-        //       if ( ( i100 > 0 ) || ( ( i100 === 0 ) && ( i10 > 0 ) ) ) {  // no preceding zeros tens
-        //           d10 = digit[ i10 ].clone();                             // digit for tenth
-        //           board.add( d10 );                                       //  on the board
-        //       }
-
-        //       d1 =   digit[ i1 ].clone();                                 // digit 
-        //       board.add( d1 );                                            //  on the board ...
-        //       // d1.position.x = 8 * 0.1 * size;                             // ... move slightly to the right
-        //       // d1.position.y = 8 * 0.1 * size;                             // ... move slightly to the right
-        //   }
-
-        //   this.update = function ( ) {
-        //       if ( this.mode === 1 || this.mode === 3 ) {
-        //           for( let n = 0; n < vertexNumbers.length; n ++ ) {
-        //               vertexNumbers[n].lookAt(camera.position);
-        //           }
-        //       }
-        //       if ( this.mode === 2 || this.mode === 3 ) {
-        //           for( let n = 0; n < faceNumbers.length; n ++ ) {
-        //               faceNumbers[n].lookAt( camera.position );
-        //           }
-        //       }
-        //   }
-        //   this.update( ); // update helper
-        // };
-
-        
         const renderer = new THREE.WebGLRenderer({
           antialias: true
         });
@@ -509,7 +344,32 @@
             console.log(vBkey);
             console.log(vCkey);
 
-            const isBomb = bombPlacements[intersection.faceIndex];
+            let isBomb = bombPlacements[intersection.faceIndex];
+
+            // Stop the player from losing on the first click
+            if (!firstClickHappened && isBomb) {
+              // Put the bomb somewhere else
+              const zeroIndices = [];
+              for (let i = 0; i < bombPlacements.length; i++) {
+                if (bombPlacements[i] === 0) {
+                  zeroIndices.push(i);
+                }
+              }
+
+              // If there are no 0s in the array, return null
+              if (zeroIndices.length === 0) {
+                return null;
+              }
+
+              // Choose a random index from the list of 0 indices
+              const randomIndex = Math.floor(Math.random() * zeroIndices.length);
+
+              // Set the corresponding element in bombPlacements to 1
+              bombPlacements[zeroIndices[randomIndex]] = 1;
+              bombPlacements[intersection.faceIndex] = 0;
+              isBomb = false;
+            }
+
             let color = new THREE.Color(0xFFFFFF);
             if (isBomb) {
               color = new THREE.Color(0x000000); // Game over
@@ -526,6 +386,7 @@
               revealedFaces.push(intersection.faceIndex);
               if (revealedFaces === totalFaces - bombs) console.log('You win!');
             }
+            firstClickHappened = true;
 
             colorAttribute.setXYZ(face.a, color.r, color.g, color.b);
             colorAttribute.setXYZ(face.b, color.r, color.g, color.b);
