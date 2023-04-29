@@ -480,21 +480,20 @@
         }
 
         const bombColorMap = {
-          // 0: new THREE.Color(0x4A4A4A),
-          0: new THREE.Color(0x8A8A8A),
-          1: new THREE.Color(0xADD8E6),
-          // 1: new THREE.Color(0xFFFFFF),
-          2: new THREE.Color(0x00ff00),
-          3: new THREE.Color(0xff0000),
-          4: new THREE.Color(0xA020F0),
-          5: new THREE.Color(0x964B00),
-          6: new THREE.Color(0x0D98BA),
-          7: new THREE.Color(0x5A5A5A),
-          8: new THREE.Color(0xD3D3D3),
-          9: new THREE.Color(0xFFC0CB),
-          10: new THREE.Color(0x00FFFF),
-          11: new THREE.Color(0xFFFF00),
-          12: new THREE.Color(0xFF00FF),
+          0: new THREE.Color(0x8A8A8A), // Light gray
+          // 1: new THREE.Color(0xADD8E6), // Light blue
+          1: new THREE.Color(0x9D9D9D),
+          2: new THREE.Color(0x90EE90), // Light green
+          3: new THREE.Color(0xffcccb), // Light red
+          4: new THREE.Color(0xD8BFD8), // Light purple
+          5: new THREE.Color(0xC4A484), // Light brown
+          6: new THREE.Color(0x0D98BA), // Lightish blue
+          7: new THREE.Color(0xFFFF00), // Yellow
+          8: new THREE.Color(0xFFC0CB), // Pink
+          9: new THREE.Color(0x00FFFF), // Very bright light blue
+          10: new THREE.Color(0xFFA500), // Orange
+          11: new THREE.Color(0x3CB371), // Medium green
+          12: new THREE.Color(0xFF00FF), // Magenta
         }
 
         function revealFace(faceIndex) {
@@ -569,6 +568,8 @@
               });
             }
             revealedFaces = Array.from(new Set(revealedFaces)); // TODO: This shouldn't be necessary
+
+            // End the game in the case of a win
             if (revealedFaces.length === totalFaces - totalBombs) {
               stopTimer();
               for (let i = 0; i < totalFaces; i++) {
@@ -705,11 +706,6 @@
           if (intersects.length > 0) {
 
             const intersection = intersects[1];
-            if (flaggedFaces.indexOf(intersection.faceIndex) !== -1) {
-              // TODO: Unflag the triangle
-              return false;
-            }
-
             const colorAttribute = intersection.object.geometry.getAttribute('color');
             const face = intersection.face;
             var vA = new THREE.Vector3();
@@ -736,14 +732,23 @@
               return false;
             }
 
-            color = new THREE.Color(0x013220);
+            if (flaggedFaces.indexOf(intersection.faceIndex) === -1) {
+              // color = new THREE.Color(0x124331);
+              color = new THREE.Color(0x235442);
+              flaggedFaces.push(intersection.faceIndex);
+            } else {
+              // TODO: Unflag the triangle
+              // return false;
+              color = new THREE.Color(0xfffdfc); // This is good enough
+              const index = flaggedFaces.indexOf(intersection.faceIndex);
+              flaggedFaces.splice(index, 1); // 2nd parameter means remove one item only
+            }
 
             colorAttribute.setXYZ(face.a, color.r, color.g, color.b);
             colorAttribute.setXYZ(face.b, color.r, color.g, color.b);
             colorAttribute.setXYZ(face.c, color.r, color.g, color.b);
 
             colorAttribute.needsUpdate = true;
-            flaggedFaces.push(intersection.faceIndex);
             const totalBombsElement = document.getElementById("total-bombs");
             totalBombsElement.innerHTML = `Bombs: ${(totalBombs - flaggedFaces.length).toString().padStart(4, '0')}`;
           }
