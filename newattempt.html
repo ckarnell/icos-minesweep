@@ -120,7 +120,7 @@
     </div>
     <div id="timer-container">
       <div class="timer-label" id="timer">Timer: 0000</div>
-      <div id="total-bombs" class="timer-label">Total Bombs: 0000</div>
+      <div id="total-bombs" class="timer-label">Bombs: 0000</div>
     </div>
     <script>
       // Timer stuff
@@ -567,10 +567,23 @@
             if (revealedFaces.length === totalFaces - totalBombs) {
               stopTimer();
               for (let i = 0; i < totalFaces; i++) {
-                if (!bombPlacements[i] && revealedFaces.indexOf(i) === -1) {
-                  revealFace(i);
+                // window.onRightClickHandler
+                if (bombPlacements[i] && flaggedFaces.indexOf(i) === -1) {
+                  const colorAttribute = icosahedrons[0].geometry.getAttribute('color');
+                  color = new THREE.Color(0x013220);
+
+                  colorAttribute.setXYZ(i*3, color.r, color.g, color.b);
+                  colorAttribute.setXYZ((i*3) + 1, color.r, color.g, color.b);
+                  colorAttribute.setXYZ((i*3) + 2, color.r, color.g, color.b);
+
+                  colorAttribute.needsUpdate = true;
                 }
+                // if (!bombPlacements[i] && revealedFaces.indexOf(i) === -1) {
+                //   revealFace(i);
+                // }
               }
+              const totalBombsElement = document.getElementById("total-bombs");
+              totalBombsElement.innerHTML = 'Bombs: 0000';
               // TODO: Record record in a cookie
               gameOver = true;
               console.log('You win!');
