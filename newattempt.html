@@ -504,66 +504,6 @@
             const face = intersection.face;
             console.log(face);
             revealFace(faceIndex);
-            //var vA = new THREE.Vector3();
-            //var vB = new THREE.Vector3();
-            //var vC = new THREE.Vector3();
-            //var geometry = intersection.object.geometry;
-            //var position = geometry.attributes.position;
-            //vA.fromBufferAttribute(position, face.a);
-            //vB.fromBufferAttribute(position, face.b);
-            //vC.fromBufferAttribute(position, face.c);
-            //const vAkey = vA.x.toString() + '|' + vA.y.toString() + '|' + vA.z.toString();
-            //const vBkey = vB.x.toString() + '|' + vB.y.toString() + '|' + vB.z.toString();
-            //const vCkey = vC.x.toString() + '|' + vC.y.toString() + '|' + vC.z.toString();
-
-            //let isBomb = bombPlacements[intersection.faceIndex];
-
-            //// Stop the player from losing on the first click
-            //if (!firstClickHappened && isBomb) {
-            //  // Put the bomb somewhere else
-            //  const zeroIndices = [];
-            //  for (let i = 0; i < bombPlacements.length; i++) {
-            //    if (bombPlacements[i] === 0) {
-            //      zeroIndices.push(i);
-            //    }
-            //  }
-
-            //  // If there are no 0s in the array, return null
-            //  if (zeroIndices.length === 0) {
-            //    return null;
-            //  }
-
-            //  // Choose a random index from the list of 0 indices
-            //  const randomIndex = Math.floor(Math.random() * zeroIndices.length);
-
-            //  // Set the corresponding element in bombPlacements to 1
-            //  bombPlacements[zeroIndices[randomIndex]] = 1;
-            //  bombPlacements[intersection.faceIndex] = 0;
-            //  isBomb = false;
-            //}
-
-            //let color = new THREE.Color(0xFFFFFF);
-            //if (isBomb) {
-            //  color = new THREE.Color(0x000000); // Game over
-            //  gameOver = true;
-            //  console.log('Game over');
-            //  // document.querySelector('.btn').style.display = 'block';
-            //} else {
-            //  const surroundingBombs = getSurroundingBombsTotal(vA, vB, vC);
-            //  color = bombColorMap[surroundingBombs];
-            //  if (revealedFaces.indexOf(intersection.faceIndex) === -1) {
-            //    vertexFaceNumberHelper(camera, icosahedron, 2, 0.1, 0x000000, intersection.faceIndex);
-            //  }
-            //  revealedFaces.push(intersection.faceIndex);
-            //  if (revealedFaces === totalFaces - bombs) console.log('You win!');
-            //}
-            //firstClickHappened = true;
-
-            //colorAttribute.setXYZ(face.a, color.r, color.g, color.b);
-            //colorAttribute.setXYZ(face.b, color.r, color.g, color.b);
-            //colorAttribute.setXYZ(face.c, color.r, color.g, color.b);
-
-            //colorAttribute.needsUpdate = true;
           }
           return false;
         }
