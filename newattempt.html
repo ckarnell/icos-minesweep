@@ -685,12 +685,7 @@
           if (intersects.length > 0) {
 
             const intersection = intersects[1];
-            if (flaggedFaces.indexOf(intersection.faceIndex) !== -1){
-              // TODO: If the number of adjacent bombs equals the number of adjacent flags,
-              // reveal surrounding triangles.
-              return false;
-            }
-            if (revealedFaces.indexOf(intersection.faceIndex) !== -1) {
+            if (flaggedFaces.indexOf(intersection.faceIndex) !== -1) {
               // TODO: Unflag the triangle
               return false;
             }
@@ -705,6 +700,21 @@
             vA.fromBufferAttribute(position, face.a);
             vB.fromBufferAttribute(position, face.b);
             vC.fromBufferAttribute(position, face.c);
+            if (revealedFaces.indexOf(intersection.faceIndex) !== -1) {
+              // TODO: If the number of adjacent bombs equals the number of adjacent flags,
+              // reveal surrounding triangles.
+              const surroundingBombs = getSurroundingBombsTotal(vA, vB, vC);
+              let adjacentIndices = [];
+              adjacentIndices = adjacentIndices.concat(adjacentFaceIndicesMap[getKey(vA.x, vA.y, vA.z)]);
+              adjacentIndices = adjacentIndices.concat(adjacentFaceIndicesMap[getKey(vB.x, vB.y, vB.z)]);
+              adjacentIndices = adjacentIndices.concat(adjacentFaceIndicesMap[getKey(vC.x, vC.y, vC.z)]);
+              const uniqueAdjacentIndices = Array.from(new Set(adjacentIndices));
+              const surroundingFlags = uniqueAdjacentIndices.map(ind => flaggedFaces.indexOf(ind) !== -1).filter(flag => !!flag).length;
+              if (surroundingFlags === surroundingBombs) {
+                uniqueAdjacentIndices.filter(uniqueFace => revealedFaces.indexOf(uniqueFace) === -1).forEach(uniqueFace => revealFace(uniqueFace));
+              }
+              return false;
+            }
 
             color = new THREE.Color(0x013220);
 
