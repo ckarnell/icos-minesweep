@@ -124,7 +124,7 @@
     </div>
     <script>
       // Timer stuff
-      let timerInterval;
+      let timerInterval = null;
       let time = new Date();
       let updatingTime = new Date();
 
@@ -163,22 +163,26 @@
 
       function startTimer() {
         console.log('Starting timer');
-        startDate = new Date();
+        time = new Date();
+        updatingTime = new Date();
         if (!timerInterval) {
           timerInterval = setInterval(updateTimer, 0.2);
         }
       }
 
       function stopTimer() {
-        console.log('Stopping timer');
-        clearInterval(timerInterval);
+        if (timerInterval) {
+          clearInterval(timerInterval);
+        }
         timerInterval = null;
       }
 
       function resetTimer() {
         stopTimer();
-        time = 0;
-        document.getElementById('timer').innerText = formatTime(time);
+        time = new Date();
+        updatingTime = new Date();
+        updateTimer();
+        // startTimer();
       }
 
       // Get the radio buttons
@@ -205,7 +209,9 @@
       window.icosahedrons = [];
       window.globalDetail = 1;
       let scene = new THREE.Scene();
+      scene.background = new THREE.Color(0xD3D3D3);
       const startGame = function(detail) {
+        resetTimer();
         let totalBombs = 0;
         window.globalDetail = detail;
         console.log(window.icosahedrons.length - 1);
@@ -560,7 +566,11 @@
                 }
               });
             }
-            if (revealedFaces === totalFaces - bombs) console.log('You win!');
+            if (revealedFaces === totalFaces - bombs) {
+              stopTimer();
+              // TODO: Record record in a cookie
+              console.log('You win!');
+            }
           }
           if (!firstClickHappened) {
             startTimer();
@@ -675,7 +685,13 @@
           if (intersects.length > 0) {
 
             const intersection = intersects[1];
+            if (flaggedFaces.indexOf(intersection.faceIndex) !== -1){
+              // TODO: If the number of adjacent bombs equals the number of adjacent flags,
+              // reveal surrounding triangles.
+              return false;
+            }
             if (revealedFaces.indexOf(intersection.faceIndex) !== -1) {
+              // TODO: Unflag the triangle
               return false;
             }
 
@@ -698,6 +714,8 @@
 
             colorAttribute.needsUpdate = true;
             flaggedFaces.push(intersection.faceIndex);
+            const totalBombsElement = document.getElementById("total-bombs");
+            totalBombsElement.innerHTML = `Bombs: ${(totalBombs - flaggedFaces.length).toString().padStart(4, '0')}`;
           }
           return false;
         }
