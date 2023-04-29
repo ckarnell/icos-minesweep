@@ -111,8 +111,12 @@
         <span>Intermediate</span>
       </label>
       <label>
-        <input type="radio" name="difficulty" value="3">
+        <input type="radio" name="difficulty" value="4">
         <span>Expert</span>
+      </label>
+      <label>
+        <input type="radio" name="difficulty" value="10">
+        <span>Impossible</span>
       </label>
       <label>
         <span class="restart" onClick="startGame(window.globalDetail)">Restart</span>
@@ -549,6 +553,7 @@
             color = bombColorMap[surroundingBombs];
             if (revealedFaces.indexOf(faceIndex) === -1) {
               vertexFaceNumberHelper(camera, icosahedron, 2, 0.1, 0x000000, faceIndex);
+              // vertexFaceNumberHelper(camera, icosahedron, 2, 0.05, 0x000000, faceIndex);
             }
             revealedFaces.push(faceIndex);
             if (surroundingBombs === 0) {
