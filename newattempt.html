@@ -162,7 +162,6 @@
       }
 
       function startTimer() {
-        console.log('Starting timer');
         time = new Date();
         updatingTime = new Date();
         if (!timerInterval) {
@@ -214,7 +213,6 @@
         resetTimer();
         let totalBombs = 0;
         window.globalDetail = detail;
-        console.log(window.icosahedrons.length - 1);
         let lastIcosahedron = window.icosahedrons[window.icosahedrons.length - 1];
         if (lastIcosahedron) {
           for(var i = scene.children.length - 1; i >= 0; i--) { 
@@ -298,7 +296,7 @@
           let i10  =  0;
           let i1   = -1;
 
-          function addBombAtFaceIndex(i) {
+          function addNumberAtFaceIndex(i) {
             // number on board, up to three digits are pinned there
             let board = null;
             if (!firstClickHappened) {
@@ -326,7 +324,7 @@
 
           if ( mode === 2 || mode === 3 ) {
              for ( let i = 0; i < faceCount ; i ++ ) {
-                 addBombAtFaceIndex(i);
+                 addNumberAtFaceIndex(i);
              }
 
              for( let n = 0; n < window.faceNumbers.length; n ++ ) {
@@ -444,7 +442,6 @@
         const wireframeMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true, transparent: true, shading: THREE.FlatShading, vertexColors: true } );
         const newGeometry = new THREE.IcosahedronGeometry(3.001, detail);
         const totalFaces = newGeometry.attributes.position.count / 3;
-        const bombs = Math.floor(totalFaces / 4.4);
         const wireframe = new THREE.Mesh(newGeometry, wireframeMaterial);
         indexGeometry(icosahedron.geometry);
         icosahedron.add(wireframe);
@@ -566,9 +563,16 @@
                 }
               });
             }
-            if (revealedFaces === totalFaces - bombs) {
+            revealedFaces = Array.from(new Set(revealedFaces)); // TODO: This shouldn't be necessary
+            if (revealedFaces.length === totalFaces - totalBombs) {
               stopTimer();
+              for (let i = 0; i < totalFaces; i++) {
+                if (!bombPlacements[i] && revealedFaces.indexOf(i) === -1) {
+                  revealFace(i);
+                }
+              }
               // TODO: Record record in a cookie
+              gameOver = true;
               console.log('You win!');
             }
           }
@@ -611,10 +615,8 @@
             const faceIndex = intersection.faceIndex;
             //if (flaggedFaces.indexOf(faceIndex) !== -1) return;
 
-            console.log(intersection);
             const colorAttribute = intersection.object.geometry.getAttribute('color');
             const face = intersection.face;
-            console.log(face);
             revealFace(faceIndex);
           }
           return false;
