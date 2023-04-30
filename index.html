@@ -175,7 +175,9 @@
     <div id="timer-container">
       <div class="timer-label" id="timer">Timer: 0000</div>
       <div id="total-bombs" class="timer-label">Bombs: 0000</div>
-      <!-- <div id="best-time" class="timer-label">Best:&nbsp  ----</div> -->
+      <div class="timer-label">
+      <span id="best-time-label" class="timer-label">Best:&nbsp&nbsp</span><span id="best-time" class="timer-label">----</span>
+      </div>
     </div>
     <script>
       // Timer stuff
@@ -229,16 +231,16 @@
         let cookieName = '';
         switch (difficulty) {
           case 1:
-            cookieName = 'beginnerBest';
+            cookieName = '1Best';
             break;
           case 2:
-            cookieName = 'intermediateBest';
+            cookieName = '2Best';
             break;
           case 4:
-            cookieName = 'expertBest';
+            cookieName = '4Best';
             break;
           case 10:
-            cookieName = 'impossibleBest';
+            cookieName = '10Best';
             break;
           default:
             console.error('Invalid difficulty:', difficulty);
@@ -304,21 +306,23 @@
 
       // Add event listeners to the radio buttons
       radioButtons.forEach(function(radioButton) {
+        const bestTimeCookie = document.cookie.replace(/(?:(?:^|.*;\s*)difficulty\s*\=\s*([^;]*).*$)|^.*$/, "$1");
         radioButton.addEventListener('click', function() {
           difficulty = Number(this.value);
+          const cookieName = `${difficulty}Best`;
+          console.log(cookieName);
+          const bestTime = localStorage.getItem(cookieName);
+          const bestTimeElement = document.getElementById("best-time");
+          if (bestTime) {
+            bestTimeElement.innerHTML = bestTime;
+          } else {
+            bestTimeElement.innerHTML = '----';
+          }
+
           document.cookie = `difficulty=${difficulty}`;
           startGame(difficulty);
         });
       });
-      
-
-      // // Add event listeners to the radio buttons
-      // radioButtons.forEach(function(radioButton) {
-      //   radioButton.addEventListener('click', function() {
-      //     const difficulty = Number(this.value);
-      //     startGame(difficulty);
-      //   });
-      // });
 
       window.onClickHandler = () => {};
       window.onRightClickHandler = () => {};
