@@ -226,26 +226,23 @@
         return secondsDifference;
       }
 
-      function gameWin(difficulty) {
-        const gameTime = document.getElementById('timer').innerText.split(' ')[1];
-        let cookieName = '';
-        switch (difficulty) {
-          case 1:
-            cookieName = '1Best';
-            break;
-          case 2:
-            cookieName = '2Best';
-            break;
-          case 4:
-            cookieName = '4Best';
-            break;
-          case 10:
-            cookieName = '10Best';
-            break;
-          default:
-            console.error('Invalid difficulty:', difficulty);
-            return;
+      // function setBest(gameTime) {
+      //   const cookieName = `${difficulty}Best`;
+      //   localStorage.setItem(cookieName, gameTime);
+      // }
+
+      function setBestTime(bestTime) {
+        const bestTimeElement = document.getElementById("best-time");
+        if (bestTime) {
+          bestTimeElement.innerHTML = bestTime;
+        } else {
+          bestTimeElement.innerHTML = '----';
         }
+      }
+
+      function updateBest(difficulty) {
+        const gameTime = document.getElementById('timer').innerText.split(' ')[1];
+        const cookieName = `${difficulty}Best`;
 
         // Get the existing best time for the current difficulty
         let existingBestTime = Number(localStorage.getItem(cookieName));
@@ -253,8 +250,16 @@
         // Update the best time if it doesn't exist or is greater than the current time
         if (!existingBestTime || gameTime < existingBestTime) {
           localStorage.setItem(cookieName, gameTime);
+          setBestTime(gameTime);
+          // const bestTimeElement = document.getElementById("best-time");
+          // if (bestTime) {
+          //   bestTimeElement.innerHTML = bestTime;
+          // } else {
+          //   bestTimeElement.innerHTML = '----';
+          // }
         }
       }
+
 
       function updateTimer() {
         updatingTime = new Date()
@@ -293,6 +298,12 @@
       // Set the difficulty based on the cookie, or the default if the cookie doesn't exist
       let difficulty = difficultyCookie ? Number(difficultyCookie) : Number(document.querySelector('.radio-group input:checked').value);
 
+      // Get the existing best time for the current difficulty
+      const cookieName = `${difficulty}Best`;
+      let existingBestTime = Number(localStorage.getItem(cookieName));
+      setBestTime(existingBestTime);
+
+
       // Set the cookie with the default difficulty if it doesn't exist
       if (difficultyCookie) {
         document.querySelector(`.radio-group input[value="${difficulty}"]`).checked = true;
@@ -310,7 +321,6 @@
         radioButton.addEventListener('click', function() {
           difficulty = Number(this.value);
           const cookieName = `${difficulty}Best`;
-          console.log(cookieName);
           const bestTime = localStorage.getItem(cookieName);
           const bestTimeElement = document.getElementById("best-time");
           if (bestTime) {
@@ -718,6 +728,7 @@
               // TODO: Record record in a cookie
               gameOver = true;
               createConfetti();
+              updateBest(difficulty);
               console.log('You win!');
             }
           }
